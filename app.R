@@ -1,21 +1,17 @@
-## app.R ##
-
-install.packages(c("shinydashboard","shiny","plotly","ggplot2","rgdal","leaflet","dplyr"))
-
-library(shinydashboard)
-library(shiny)
-library(plotly)
-library('ggplot2')
-library(rgdal)
-library(leaflet)
-library("dplyr")
+## app.R
+require('ggplot2')
+require(sf)
+require("shinydashboard")
+require("shiny")
+require("plotly")
+  require("rgdal")
+require("leaflet")
+require("dplyr")
 
 data <-
   read.csv(url("https://covid19.who.int/WHO-COVID-19-global-data.csv"))
 data$Date <- as.Date(strptime(data$ï..Date_reported, "%Y-%m-%d"))
 cont <- unique(data$Country)
-
-print(getwd())
 
 header <- dashboardHeader(title = "Covid-19 Dashboard")
 
