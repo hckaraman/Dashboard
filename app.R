@@ -10,7 +10,7 @@ require("dplyr")
 
 data <-
   read.csv(url("https://covid19.who.int/WHO-COVID-19-global-data.csv"))
-data$Date <- as.Date(strptime(data$ï..Date_reported, "%Y-%m-%d"))
+data$Date <- as.Date(strptime(data$Date_reported, "%Y-%m-%d"))
 cont <- unique(data$Country)
 
 header <- dashboardHeader(title = "Covid-19 Dashboard")
