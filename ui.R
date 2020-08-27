@@ -1,5 +1,12 @@
 ## app.R ##
 library(shinydashboard)
+library('ggplot2')
+
+
+data <- read.csv(url("https://covid19.who.int/WHO-COVID-19-global-data.csv"))
+data$Date <- as.Date(strptime(data$ï..Date_reported, "%Y-%m-%d"))
+cont <- unique(data$Country)
+
 
 header <- dashboardHeader(title = "Basic dashboard")
 
@@ -26,7 +33,13 @@ body <-   dashboardBody(tabItems(
             
             box(
               title = "Controls",
-              sliderInput("slider", "Number of observations:", 1, 100, 50)
+              selectInput(
+                "cont",
+                "Select Index",
+                cont,
+                selected = 'Turkey',
+                multiple = FALSE
+              )
             )
           )),
   
@@ -38,6 +51,7 @@ body <-   dashboardBody(tabItems(
 
 
 
+
 ui <- dashboardPage(header,
                     sidebar,
                     body)
@@ -45,12 +59,18 @@ ui <- dashboardPage(header,
 
 
 server <- function(input, output) {
-  set.seed(122)
-  histdata <- rnorm(500)
+  
+  
   
   output$plot1 <- renderPlot({
-    data <- histdata[seq_len(input$slider)]
-    hist(data)
+    temp <- data[which(data$Country == input$cont),]
+    ggplot(temp) +
+      geom_line(
+        aes(Date, as.numeric(New_cases)),
+        group = 1,
+        color = "red",
+        size = 1
+      )
   })
 }
 
