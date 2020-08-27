@@ -1,0 +1,12 @@
+name: Dashboard
+title: Dashboard
+username:
+account: cak-covid19
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2716178
+bundleId: 3564655
+url: https://cak-covid19.shinyapps.io/Dashboard/
+when: 1598552444.04205
+asMultiple: FALSE
+asStatic: FALSE
