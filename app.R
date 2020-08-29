@@ -9,7 +9,7 @@ require("leaflet")
 require("dplyr")
 
 data <-
-  read.csv(url("https://covid19.who.int/WHO-COVID-19-global-data.csv"))
+  read.csv(url("https://covid19.who.int/WHO-COVID-19-global-data.csv"), fileEncoding = "UTF-8-BOM")
 data$Date <- as.Date(strptime(data$Date_reported, "%Y-%m-%d"))
 cont <- unique(data$Country)
 
@@ -208,7 +208,8 @@ server <- function(input, output) {
         textsize = "15px",
         direction = "auto"))
     m
-    
+
+
     
     
     
@@ -219,3 +220,5 @@ server <- function(input, output) {
 }
 
 shinyApp(ui, server)
+
+names()
