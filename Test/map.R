@@ -50,7 +50,9 @@ shinyApp(
                              'Single Quote' = "'"
                            ),
                            '"'
-                         )
+                         ),
+                         actionButton("button", "Get basin")
+                         
                          
                        ),
                        mainPanel(leafletOutput(
@@ -91,8 +93,8 @@ shinyApp(
     
     output$mymap <- renderLeaflet(
       leaflet() %>%
-        addProviderTiles("Esri.OceanBasemap", group = "Ocean Basemap") %>%
-        setView(lng = 37, lat = 38.0, zoom = 2) %>%
+        addTiles() %>%
+        setView(lng = 37, lat = 38.0, zoom = 4) %>%
         addDrawToolbar(
           targetGroup = 'draw',
           editOptions = editToolbarOptions(selectedPathOptions = selectedPathOptions())
@@ -146,7 +148,7 @@ shinyApp(
         overwrite_layer = TRUE
       )
       
-      v()
+      # v()
       # print(feature)
       
     })
@@ -206,6 +208,21 @@ shinyApp(
           overwrite_layer = TRUE
         )
       
+      writeOGR(
+        r.to.poly,
+        dsn = "./Data/Polygon.shp",
+        layer = "shpExport",
+        driver = "ESRI Shapefile",
+        overwrite_layer = TRUE
+      )
+      
+      
+      wbt_clip_raster_to_polygon(input = "./Data/out_dem.tif",polygons = "./Data/Polygon.shp",output = "./Data/dem_clipped.tif")
+      wbt_d8_flow_accumulation(input = "./Data/dem_clipped.tif",output = "./Data/out_acc_clip.tif")
+      wbt_d8_pointer(dem = "./Data/dem_clipped.tif",output = "./Data/flow_dir_clip.tif")
+      wbt_extract_streams(flow_accum = "./Data/out_acc_clip.tif",output = "./Data/streams.tif",threshold = 2)
+      wbt_find_main_stem(d8_pntr = "./Data/flow_dir_clip.tif",streams = "./Data/streams.tif",output = "./Data/main_stream.tif")
+      
       nycounties <- rgdal::readOGR("./Data/Polygon.json")
       sf_cent <- gCentroid(nycounties)
       x <- data.frame(sf_cent)
@@ -219,8 +236,13 @@ shinyApp(
                     fillOpacity = 0.6) %>%
         setView(lng = lon,
                 lat = lat,
-                zoom = 7)
+                zoom = 9)
     }
+    
+    
+    observeEvent(input$button, {
+      v()
+    })
     
     
     
