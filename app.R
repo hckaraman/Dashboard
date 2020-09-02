@@ -4,7 +4,7 @@ require(sf)
 require("shinydashboard")
 require("shiny")
 require("plotly")
-  require("rgdal")
+require("rgdal")
 require("leaflet")
 require("dplyr")
 
@@ -52,15 +52,15 @@ body <-   dashboardBody(tabItems(
               collapsible = TRUE,
               plotlyOutput("plot1", height = 500)
             )),
-            
-            fluidRow(
-              box(
-                title = "Daily Cases",
-                width = 10,
-                solidHeader = TRUE,
-                collapsible = TRUE,
-                leafletOutput("map")  
-              ),
+          
+          fluidRow(
+            box(
+              title = "Daily Cases",
+              width = 10,
+              solidHeader = TRUE,
+              collapsible = TRUE,
+              leafletOutput("map")  
+            ),
             
             
           )),
@@ -167,7 +167,7 @@ server <- function(input, output) {
     # reactive expression code required here to connect with ui selection?
     
     data <- read.csv(url("https://covid19.who.int/WHO-COVID-19-global-data.csv"))
-    data$Date <- as.Date(strptime(data$ï..Date_reported,"%Y-%m-%d"))
+    data$Date <- as.Date(strptime(data$Date_reported,"%Y-%m-%d"))
     states <- readOGR("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json")
     temp <- data %>%
       group_by(Country) %>%
@@ -214,11 +214,9 @@ server <- function(input, output) {
     
     
   })
-
+  
   
   
 }
 
 shinyApp(ui, server)
-
-names()
