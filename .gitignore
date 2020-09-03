@@ -35,6 +35,10 @@ vignettes/*.pdf
 *.utf8.md
 *.knit.md
 
-Test/Data/
+#Test/Data/
 
 rsconnect/shinyapps.io/cak-covid19/
+
+.idea/
+
+Test/Data/

@@ -6,6 +6,7 @@ library(sf)
 library(rgeos)
 library(raster)
 library(whitebox)
+library(stars)
 
 latitude <-
   c(35.94077, 35.83770, 35.84545, 35.81584, 35.79387, 36.05600)
@@ -51,7 +52,8 @@ shinyApp(
                            ),
                            '"'
                          ),
-                         actionButton("button", "Get basin")
+                         actionButton("button", "Get basin"),
+                         downloadButton("down", "Download"),
                          
                          
                        ),
@@ -142,7 +144,7 @@ shinyApp(
         "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
       writeOGR(
         df,
-        dsn = "shpExport.shp",
+        dsn = "./Data/box.shp",
         layer = "shpExport",
         driver = "ESRI Shapefile",
         overwrite_layer = TRUE
@@ -198,7 +200,9 @@ shinyApp(
                                   output = "./Data/Watershed.tif")
       
       r1 <- raster("./Data/Watershed.tif")
-      r.to.poly<-rasterToPolygons(r1, dissolve = T)
+      r.to.poly <- sf::as_Spatial(sf::st_as_sf(stars::st_as_stars(r), 
+                                               as_points = FALSE, merge = TRUE)
+      )
       writeOGR(
           r.to.poly,
           dsn = "./Data/Polygon.json",
@@ -220,7 +224,7 @@ shinyApp(
       wbt_clip_raster_to_polygon(input = "./Data/out_dem.tif",polygons = "./Data/Polygon.shp",output = "./Data/dem_clipped.tif")
       wbt_d8_flow_accumulation(input = "./Data/dem_clipped.tif",output = "./Data/out_acc_clip.tif")
       wbt_d8_pointer(dem = "./Data/dem_clipped.tif",output = "./Data/flow_dir_clip.tif")
-      wbt_extract_streams(flow_accum = "./Data/out_acc_clip.tif",output = "./Data/streams.tif",threshold = 2)
+      wbt_extract_streams(flow_accum = "./Data/out_acc_clip.tif",output = "./Data/streams.tif",threshold = 3)
       wbt_find_main_stem(d8_pntr = "./Data/flow_dir_clip.tif",streams = "./Data/streams.tif",output = "./Data/main_stream.tif")
       
       nycounties <- rgdal::readOGR("./Data/Polygon.json")
@@ -243,6 +247,20 @@ shinyApp(
     observeEvent(input$button, {
       v()
     })
+    
+    
+    output$downloadData <- downloadHandler(
+      
+      filename ='./Data/shpExport.zip',
+      content = function(file) {
+      Zip_Files <- list.files(path = "./Test/Data/", pattern = "Polygon.*")
+      zip::zip(zipfile = "./Test/Data/shpExport.zip", files = Zip_Files)
+        
+      file.copy("./Data/shpExport.zip", file)
+      }
+      
+    )
+
     
     
     
