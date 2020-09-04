@@ -13,7 +13,7 @@ data <-
   read.csv(url("https://covid19.who.int/WHO-COVID-19-global-data.csv"), fileEncoding = "UTF-8-BOM")
 data$Date <- as.Date(strptime(data$Date_reported, "%Y-%m-%d"))
 cont <- unique(data$Country)
-
+states <- readOGR("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json")
 header <- dashboardHeader(title = "Covid-19 Dashboard")
 
 sidebar <- dashboardSidebar(sidebarMenu(
@@ -171,7 +171,7 @@ server <- function(input, output) {
     
     data <- read.csv(url("https://covid19.who.int/WHO-COVID-19-global-data.csv"))
     data$Date <- as.Date(strptime(data$Date_reported,"%Y-%m-%d"))
-    states <- readOGR("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json")
+    
     temp <- data %>%
       group_by(Country) %>%
       slice(c(n())) %>%
@@ -219,11 +219,13 @@ server <- function(input, output) {
   })
   
   observeEvent(input$cont, {
-    print("at")
-    leafletProxy("map", data = nycounties) %>%
-      setView(lng = 37,
-              lat = 37,
-              zoom = 9)
+    temp <- states[which(states$name == input$cont), ]
+    lon <- (xmax(temp)+xmin(temp))/2
+    lat <- (ymax(temp)+ymin(temp))/2
+    leafletProxy("map") %>%
+      setView(lng = lon,
+              lat = lat,
+              zoom = 5)
   })
   
   
