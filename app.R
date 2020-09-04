@@ -122,11 +122,7 @@ server <- function(input, output) {
     
     p
     
-    
-    leafletProxy("map", data = nycounties) %>%
-      setView(lng = 37,
-              lat = 37,
-              zoom = 9)
+   
     
   })
   
@@ -222,6 +218,13 @@ server <- function(input, output) {
     
   })
   
+  observeEvent(input$cont, {
+    print("at")
+    leafletProxy("map", data = nycounties) %>%
+      setView(lng = 37,
+              lat = 37,
+              zoom = 9)
+  })
   
   
 }
