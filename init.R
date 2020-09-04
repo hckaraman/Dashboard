@@ -11,4 +11,7 @@ install_if_missing = function(p) {
   }
 }
 
+# install.packages("rgdal", repos = "http://cran.us.r-project.org", type = "source")
+
+install.packages("sf")
 invisible(sapply(my_packages, install_if_missing))
