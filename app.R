@@ -7,6 +7,7 @@ require("plotly")
 require("rgdal")
 require("leaflet")
 require("dplyr")
+library(leaflet.extras)
 
 data <-
   read.csv(url("https://covid19.who.int/WHO-COVID-19-global-data.csv"), fileEncoding = "UTF-8-BOM")
@@ -120,6 +121,12 @@ server <- function(input, output) {
       )
     
     p
+    
+    
+    leafletProxy("map", data = nycounties) %>%
+      setView(lng = 37,
+              lat = 37,
+              zoom = 9)
     
   })
   
