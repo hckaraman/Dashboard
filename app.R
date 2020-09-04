@@ -8,9 +8,12 @@ require("rgdal")
 require("leaflet")
 require("dplyr")
 library(leaflet.extras)
+library(vroom)
+library(raster)
+
 
 data <-
-  read.csv(url("https://covid19.who.int/WHO-COVID-19-global-data.csv"), fileEncoding = "UTF-8-BOM")
+  vroom(url("https://covid19.who.int/WHO-COVID-19-global-data.csv"))
 data$Date <- as.Date(strptime(data$Date_reported, "%Y-%m-%d"))
 cont <- unique(data$Country)
 states <- readOGR("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json")
@@ -122,7 +125,7 @@ server <- function(input, output) {
     
     p
     
-   
+    
     
   })
   
@@ -169,9 +172,7 @@ server <- function(input, output) {
   output$map <- renderLeaflet({
     # reactive expression code required here to connect with ui selection?
     
-    data <- read.csv(url("https://covid19.who.int/WHO-COVID-19-global-data.csv"))
-    data$Date <- as.Date(strptime(data$Date_reported,"%Y-%m-%d"))
-    
+   
     temp <- data %>%
       group_by(Country) %>%
       slice(c(n())) %>%
@@ -211,8 +212,8 @@ server <- function(input, output) {
         textsize = "15px",
         direction = "auto"))
     m
-
-
+    
+    
     
     
     
@@ -220,8 +221,9 @@ server <- function(input, output) {
   
   observeEvent(input$cont, {
     temp <- states[which(states$name == input$cont), ]
-    lon <- (xmax(temp)+xmin(temp))/2
+    
     lat <- (ymax(temp)+ymin(temp))/2
+    lon <- (xmax(temp)+xmin(temp))/2
     leafletProxy("map") %>%
       setView(lng = lon,
               lat = lat,
