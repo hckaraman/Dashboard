@@ -42,3 +42,5 @@ rsconnect/shinyapps.io/cak-covid19/
 .idea/
 
 Test/Data/
+
+*.tif
