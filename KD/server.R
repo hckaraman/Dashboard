@@ -60,6 +60,25 @@ shinyServer(function(input, output) {
     
     
   })
+  
+  
+  output$downloadData <- downloadHandler(
+    filename = function() {
+      paste(input$hpp, ".csv", sep = "")
+    },
+    content = function(file) {
+      
+      query = str_interp("SELECT * from data d join hes h on d.Drenaj_No = h.BID where h.PROJECT_NA = '${input$hpp}'")
+      data <- dbGetQuery(conn, query)
+      
+      # spei1 <- v(input$Freq)$spei1
+      # res <- data.frame(as.matrix(spei1$fitted), date=time(spei1$fitted))
+      # res$year <- trunc(res$date)
+      # res$month <- (res$date - res$year) * 12 + 1
+      
+      write.csv(data, file, row.names = FALSE)
+    }
+  )
 
   
 })
