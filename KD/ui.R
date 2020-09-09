@@ -3,7 +3,7 @@ library(RSQLite)
 library(leaflet)
 library(plotly)
 
-db <- '/home/cak/Desktop/Dashboard/Data/data.db'
+db <- '/home/cak/Desktop/Dashboard/KD/Data/data.db'
 conn <- dbConnect(RSQLite::SQLite(),db)
 query <- "SELECT * from hes h "
 dr <- dbGetQuery(conn, query)
@@ -19,8 +19,8 @@ shinyUI(pageWithSidebar(
     tabsetPanel(type = "tabs",
                 tabPanel("Data Summary",
                          fluidRow(
-                           plotlyOutput("plot"),
-                           leafletOutput("mymap",height = "800px")))
+                           plotlyOutput("plot",width = "100%",height = "600px"),
+                           leafletOutput("mymap",width = "100%",height = "600px")))
                 #plotOutput("main_plot", height = "800px")
                 
     )

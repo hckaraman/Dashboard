@@ -5,11 +5,13 @@ library(ggplot2)
 library('zoo')
 # library(DT)
 library(sf)
+require("rgdal")
 
 
-
-db <- '/home/cak/Desktop/Dashboard/Data/data.db'
-
+db <- '/home/cak/Desktop/Dashboard/KD/Data/data.db'
+conn <- dbConnect(RSQLite::SQLite(),db)
+basins <- readOGR("/home/cak/Desktop/Dashboard/KD/Data/HES_b.geojson")
+hes <- readOGR("/home/cak/Desktop/Dashboard/KD/Data/HES_p.geojson")
 
 
 shinyServer(function(input, output) {
@@ -48,15 +50,69 @@ shinyServer(function(input, output) {
     query <- "SELECT * from hes h "
     data <- dbGetQuery(conn, query)
     
+   
+    
     m <- leaflet() %>%
-      setView(37, 37.8, 2) %>%
+      setView(37, 37.8, 4) %>%
       addProviderTiles("Esri.OceanBasemap")
+    
+    # labels <- sprintf(
+    #   "<strong>%s</strong><br/>%g daily cases",
+    #   df$BID
+    # ) %>% lapply(htmltools::HTML)
+    
+    # m <- leaflet(df) %>%
+    #   setView(37, 37.8, 2) %>%
+    #   addProviderTiles("Esri.OceanBasemap")
+    
     
    
     m
     
     
     
+    
+    
+  })
+  
+  observeEvent(input$hpp, {
+    
+    
+    query = str_interp("SELECT DISTINCT h.BID from data d join hes h on d.Drenaj_No = h.BID where h.PROJECT_NA  = '${input$hpp}'")
+    bid <- dbGetQuery(conn, query)
+    temp <- basins[which(basins$BID == as.character(bid)), ]
+    temp_hes <- hes[which(hes$BID == as.character(bid)), ]
+    
+    
+    lat <- (ymax(temp)+ymin(temp))/2
+    lon <- (xmax(temp)+xmin(temp))/2
+    leafletProxy("mymap") %>%
+      setView(lng = lon,
+              lat = lat,
+              zoom = 8)
+    
+    leafletProxy("mymap",data = temp) %>% addPolygons(
+      color = "#c9554d",
+      weight = 2,
+      opacity = 1,
+      dashArray = "3",
+      fillOpacity = 0.7,
+      layerId = "foo",
+      highlight = highlightOptions(
+        weight = 5,
+        color = "#666",
+        dashArray = "",
+        fillOpacity = 0.7,
+        bringToFront = TRUE),
+      # label = labels,
+      # labelOptions = labelOptions(
+      # style = list("font-weight" = "normal", padding = "3px 8px"),
+      # textsize = "15px",
+      # direction = "auto"))
+    ) 
+    
+    
+    leafletProxy("mymap",data = temp_hes) %>% addMarkers( layerId = "foop") %>% addMarkers(label = ~Date)
     
     
   })
@@ -68,7 +124,7 @@ shinyServer(function(input, output) {
     },
     content = function(file) {
       
-      query = str_interp("SELECT * from data d join hes h on d.Drenaj_No = h.BID where h.PROJECT_NA = '${input$hpp}'")
+      query = str_interp("SELECT * from data d join hes h on d.Drenaj_No = h.BID where Model = '${input$model}' and Senaryo = '${input$senaryo}' and h.PROJECT_NA = '${input$hpp}'")
       data <- dbGetQuery(conn, query)
       
       # spei1 <- v(input$Freq)$spei1
