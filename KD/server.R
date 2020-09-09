@@ -6,6 +6,10 @@ library('zoo')
 # library(DT)
 library(sf)
 require("rgdal")
+library(tidyverse)
+
+
+
 
 
 db <- '/home/cak/Desktop/Dashboard/KD/Data/data.db'
@@ -82,7 +86,13 @@ shinyServer(function(input, output) {
     bid <- dbGetQuery(conn, query)
     temp <- basins[which(basins$BID == as.character(bid)), ]
     temp_hes <- hes[which(hes$BID == as.character(bid)), ]
-    
+    temp_hes$popup <- str_c(temp_hes$COMPANY_NA,
+                            temp_hes$PROJECT_NA,
+                            temp_hes$Type,
+                            temp_hes$City,
+                            temp_hes$Capacity_U,
+                            temp_hes$Service_Ca,
+                           sep = "<br/>")
     
     lat <- (ymax(temp)+ymin(temp))/2
     lon <- (xmax(temp)+xmin(temp))/2
@@ -111,9 +121,7 @@ shinyServer(function(input, output) {
       # direction = "auto"))
     ) 
     
-    
-    leafletProxy("mymap",data = temp_hes) %>% addMarkers( layerId = "foop") %>% addMarkers(label = ~Date)
-    
+    leafletProxy("mymap",data = temp_hes) %>% addMarkers(layerId = "foop") %>% addMarkers(label = ~popup)
     
   })
   
@@ -143,3 +151,15 @@ shinyServer(function(input, output) {
 # 
 # spdf <- SpatialPointsDataFrame(coords = xy, data = data,
 #                                proj4string = CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"))
+
+# 
+# homicides %>%
+#   mutate(popup = str_c(Date,
+#                        Block,
+#                        str_c("Location type:", `Location Description`,
+#                              sep = " "),
+#                        sep = "<br/>")) %>%
+#   leaflet() %>%
+#   addTiles() %>%
+#   addMarkers(popup = ~popup) %>%
+#   frameWidget()
