@@ -1,3 +1,4 @@
+# get shiny serves plus tidyverse packages image
 FROM rocker/shiny-verse:latest
 
 # system libraries of general use
@@ -11,37 +12,31 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     libssh2-1-dev \
     libgdal-dev \
-    libproj-dev 
+    libproj-dev \
+    libudunits2-0 \
+    libudunits2-dev
+
   
 
 # install R packages required 
 # (change it dependeing on the packages you need)
-RUN R -e "install.packages('shiny', repos='http://cran.rstudio.com/')"
-RUN R -e "install.packages('shinydashboard', repos='http://cran.rstudio.com/')"
-RUN R -e "devtools::install_github('andrewsali/shinycssloaders')"
-RUN R -e "install.packages('lubridate', repos='http://cran.rstudio.com/')"
-RUN R -e "install.packages('magrittr', repos='http://cran.rstudio.com/')"
-RUN R -e "install.packages('glue', repos='http://cran.rstudio.com/')"
-RUN R -e "install.packages('DT', repos='http://cran.rstudio.com/')"
-RUN R -e "install.packages('plotly', repos='http://cran.rstudio.com/')"
-RUN R -e "install.packages('ggplot2', repos='http://cran.rstudio.com/')"
-RUN R -e "install.packages('dplyr', repos='http://cran.rstudio.com/')"
-RUN R -e "install.packages('leaflet', repos='http://cran.rstudio.com/')"
-RUN R -e "install.packages('rgdal', repos='http://cran.rstudio.com/')"
-RUN R -e "install.packages('sf', repos='http://cran.rstudio.com/')"
+RUN R -e 'install.packages(c("shiny","RSQLite","stringr","SPEI","ggplot2","zoo","sf","rgdal","tidyverse","raster"), repos="http://cran.rstudio.com/")'
 
 # copy the app to the image
 
 
-COPY Dashboard.Rproj /srv/shiny-server/
-COPY app.R /srv/shiny-server/
-COPY run.R /srv/shiny-server/
+COPY Dashboard.Rproj /srv/shiny-server/covid/
+COPY app.R /srv/shiny-server/covid/
+COPY run.R /srv/shiny-server/covid/
 
 # select port
 EXPOSE 3838
 
 # allow permission
 RUN sudo chown -R shiny:shiny /srv/shiny-server
+# COPY shiny-server.sh /usr/bin/shiny-server.sh
 
 # run app
-CMD ["/usr/bin/shiny-server.sh"]
+CMD ["R", "-e", "shiny::runApp('/srv/shiny-server/covid', host = '0.0.0.0', port = 3838)"]
+
+#CMD ["/usr/bin/shiny-server.sh"]
