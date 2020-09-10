@@ -20,7 +20,7 @@ RUN apt-get update && apt-get install -y \
 
 # install R packages required 
 # (change it dependeing on the packages you need)
-RUN R -e 'install.packages(c("shiny","RSQLite","stringr","SPEI","ggplot2","zoo","sf","rgdal","tidyverse","raster"), repos="http://cran.rstudio.com/")'
+RUN R -e 'install.packages(c("shiny","RSQLite","stringr","SPEI","ggplot2","zoo","sf","rgdal","tidyverse","raster","leaflet.extras","shinydashboard","plotly"), repos="http://cran.rstudio.com/")'
 
 # copy the app to the image
 
