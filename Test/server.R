@@ -21,8 +21,8 @@ shinyServer(function(input, output, session) {
     params <- c(input$umax, input$lmax, input$cqof, input$ckif
                 ,input$ck12, input$tof, input$tif, input$tg
                 , input$ckbf,input$csnow, 2)
-    print(params)
-    temp <- run(input$area,params,input$cal,input$basin,'mae') 
+    print(input$objective)
+    temp <- run(input$area,params,input$cal,input$basin,input$objective) 
     temp[[1]]$date <- as.Date(row.names(temp[[1]]), "%Y-%m-%d")
     temp
   })

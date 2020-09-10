@@ -5,13 +5,17 @@ library(plotly)
 library(shinyWidgets)
 
 
+files <- Sys.glob(file.path('./Data', "*.csv"))
+print(files)
 shinyUI(pageWithSidebar(
   headerPanel("Drought Analysis"),
   sidebarPanel(h3("Upload Data"),fluidRow( column(6,numericInput("area1", "Area:", 100, min = 10, max = 1000))),
                h3("NAM Parameters"),fluidRow(
     column(6,numericInput("area", "Area:", 100, min = 10, max = 1000)),
     column(6,selectInput("basin", "Select Basin", c("Alihoca","Cakit","Darbogaz"), selected = "Alihoca", multiple = FALSE)),
-    column(12,materialSwitch(inputId = "cal", label = "Calibration", status = "danger")),
+    column(6,materialSwitch(inputId = "cal", label = "Calibration", inline = T,right = FALSE,status = "danger")),
+    column(6,selectInput("objective", "Objective Function:",
+                         c("NSE","KGE","RMSE","MAE","Volume Error"), selected = "NSE", multiple = FALSE)),
     column(6,sliderInput("umax", "Umax:",
                          min = 0, max = 50, value = 25)),
     column(6,sliderInput("lmax", "Lmax:",

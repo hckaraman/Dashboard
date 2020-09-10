@@ -760,7 +760,7 @@ class Nam(object):
     _dir = r'D:\DRIVE\TUBITAK\Hydro_Model\Data\Darbogaz'
     _data = "Darbogaz.csv"
 
-    def __init__(self, area, input_parameters, calibration=False, objective='nse'):
+    def __init__(self, area, input_parameters, calibration=False, objective='NSE'):
         self._working_directory = None
         self.Data_file = None
         self.df = None
@@ -837,14 +837,14 @@ class Nam(object):
         # n = 1 - (numerator / denominator)
         # Q = np.where(self.Qobs > 10, np.nan, self.Qobs)
         # n = obj.nashsutcliffe(self.Qobs,self.Qsim)
-        if self.objective == 'rmse':
+        if self.objective == 'RMSE':
             n = rmse(self.Qobs, self.Qsim)
-        elif self.objective == 'kge':
+        elif self.objective == 'KGE':
             n = kge(self.Qobs, self.Qsim)
             n = 1 - n
-        elif self.objective == 'mea':
+        elif self.objective == 'MAE':
             n = mae(self.Qobs, self.Qsim)
-        elif self.objective == 've':
+        elif self.objective == 'Volume Error':
             n = volume_error(self.Qobs, self.Qsim)
         else:
             n = nashsutcliffe(self.Qobs, self.Qsim)
