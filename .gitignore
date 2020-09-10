@@ -46,3 +46,11 @@ Test/Data/
 *.tif
 
 KD/Data/
+
+Test/__pycache__/
+
+Test/venv/Lib/site-packages/__pycache__/
+
+Test/venv/Lib/site-packages/
+
+Test/venv/
