@@ -13,9 +13,9 @@ library(raster)
 
 
 data <-
-  vroom(url("https://covid19.who.int/WHO-COVID-19-global-data.csv"))
-data$Date <- as.Date(strptime(data$Date_reported, "%Y-%m-%d"))
-cont <- unique(data$Country)
+  vroom(url("https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/owid-covid-data.csv"))
+data$date <- as.Date(strptime(data$date, "%Y-%m-%d"))
+cont <- unique(data$location)
 states <- readOGR("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json")
 header <- dashboardHeader(title = "Covid-19 Dashboard")
 
