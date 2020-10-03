@@ -16,7 +16,7 @@ data <-
   vroom(url("https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/owid-covid-data.csv"))
 data$date <- as.Date(strptime(data$date, "%Y-%m-%d"))
 cont <- unique(data$location)
-states <- readOGR("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json")
+states <- readOGR("https://raw.githubusercontent.com/hckaraman/Dashboard/main/Data/countries_simplifed.geojson")
 header <- dashboardHeader(title = "Covid-19 Dashboard")
 
 sidebar <- dashboardSidebar(sidebarMenu(
@@ -86,22 +86,22 @@ ui <- dashboardPage(header,
 
 server <- function(input, output) {
   output$plot1 <- renderPlotly({
-    temp <- data[which(data$Country == input$cont), ]
+    temp <- data[which(data$location == input$cont), ]
     p <- plot_ly(
       temp,
-      x = ~ Date,
-      y = ~ New_cases,
+      x = ~ date,
+      y = ~ new_cases,
       type = 'scatter',
       mode = 'markers+lines',
-      size = ~ New_deaths,
+      size = ~ new_deaths,
       colors = 'silver',
       hoverinfo = 'x+text',
       text = ~ paste(
         "New Cases: ",
-        New_cases,
+        new_cases,
         "<br>",
         "New Deaths: ",
-        New_deaths,
+        new_deaths,
         "<br>"
       ),
       
@@ -110,8 +110,8 @@ server <- function(input, output) {
       marker = list(
         opacity = 0.5,
         sizemode = 'diameter',
-        color = ~ New_deaths,
-        line = list(color = ~ New_deaths,
+        color = ~ new_deaths,
+        line = list(color = ~ new_deaths,
                     width = 1),
         colorbar = list(title = 'New Deaths')
       )
@@ -130,41 +130,41 @@ server <- function(input, output) {
   })
   
   output$totalCase <- renderValueBox({
-    temp <- data[which(data$Country == input$cont), ]
+    temp <- data[which(data$location == input$cont), ]
     valueBox(
-      paste0(tail(temp$Cumulative_cases, n=1)), "Total Cases", icon = icon("list"),
+      paste0(tail(temp$total_cases, n=1)), "Total Cases", icon = icon("list"),
       color = "purple"
     )
   })
-  
-  output$totalCase <- renderValueBox({
-    temp <- data[which(data$Country == input$cont), ]
-    valueBox(
-      paste0(tail(temp$Cumulative_cases, n=1)), "Total Cases", icon = icon("list"),
-      color = "aqua"
-    )
-  })
+  # 
+  # output$totalCase <- renderValueBox({
+  #   temp <- data[which(data$Country == input$cont), ]
+  #   valueBox(
+  #     paste0(tail(temp$Cumulative_cases, n=1)), "Total Cases", icon = icon("list"),
+  #     color = "aqua"
+  #   )
+  # })
   
   output$totalDeath <- renderValueBox({
-    temp <- data[which(data$Country == input$cont), ]
+    temp <- data[which(data$location == input$cont), ]
     valueBox(
-      paste0(tail(temp$Cumulative_deaths, n=1)), "Total Deaths", icon = icon("list"),
+      paste0(tail(temp$total_deaths, n=1)), "Total Deaths", icon = icon("list"),
       color = "red"
     )
   })
   
   output$newCase <- renderValueBox({
-    temp <- data[which(data$Country == input$cont), ]
+    temp <- data[which(data$location == input$cont), ]
     valueBox(
-      paste0(tail(temp$New_cases, n=1)), "New Case", icon = icon("list"),
+      paste0(tail(temp$new_cases, n=1)), "New Case", icon = icon("list"),
       color = "purple"
     )
   })
   
   output$newDeath <- renderValueBox({
-    temp <- data[which(data$Country == input$cont), ]
+    temp <- data[which(data$location == input$cont), ]
     valueBox(
-      paste0(tail(temp$New_deaths, n=1)), "New Deaths", icon = icon("list"),
+      paste0(tail(temp$new_deaths, n=1)), "New Deaths", icon = icon("list"),
       color = "yellow"
     )
   })
@@ -174,19 +174,19 @@ server <- function(input, output) {
     
    
     temp <- data %>%
-      group_by(Country) %>%
+      group_by(location) %>%
       slice(c(n())) %>%
       ungroup()
     
-    df <- merge(states, temp, by.x="name", by.y="Country")
+    df <- merge(states, temp, by.x="location", by.y="location")
     
     
     bins <- c(0, 50, 100, 500, 1000, 5000, 10000, 100000, Inf)
-    pal <- colorBin("YlOrRd", domain = df$New_cases, bins = bins)
+    pal <- colorBin("YlOrRd", domain = df$new_cases, bins = bins)
     
     labels <- sprintf(
       "<strong>%s</strong><br/>%g daily cases",
-      df$name, df$New_cases
+      df$location, df$new_cases
     ) %>% lapply(htmltools::HTML)
     
     m <- leaflet(df) %>%
@@ -194,7 +194,7 @@ server <- function(input, output) {
       addProviderTiles("Esri.OceanBasemap")
     
     m <- m %>% addPolygons(
-      fillColor = ~pal(df$New_cases),
+      fillColor = ~pal(df$new_cases),
       weight = 2,
       opacity = 1,
       color = "white",
@@ -220,7 +220,7 @@ server <- function(input, output) {
   })
   
   observeEvent(input$cont, {
-    temp <- states[which(states$name == input$cont), ]
+    temp <- states[which(states$location == input$cont), ]
     
     lat <- (ymax(temp)+ymin(temp))/2
     lon <- (xmax(temp)+xmin(temp))/2
