@@ -1,8 +1,6 @@
 ## app.R
 require('ggplot2')
 require("sf")
-require("shinydashboard")
-require("shiny")
 require("plotly")
 require("rgdal")
 require("leaflet")
@@ -10,78 +8,6 @@ require("dplyr")
 library(leaflet.extras)
 library(vroom)
 library(raster)
-
-
-data <-
-  vroom(url("https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/owid-covid-data.csv"))
-data$date <- as.Date(strptime(data$date, "%Y-%m-%d"))
-cont <- unique(data$location)
-states <- readOGR("https://raw.githubusercontent.com/hckaraman/Dashboard/main/Data/countries_simplifed.geojson")
-header <- dashboardHeader(title = "Covid-19 Dashboard")
-
-sidebar <- dashboardSidebar(sidebarMenu(
-  menuItem(
-    "Dashboard",
-    tabName = "dashboard",
-    icon = icon("dashboard")
-  )
-  #menuItem("Widgets", tabName = "widgets", icon = icon("th"))
-))
-
-
-body <-   dashboardBody(tabItems(
-  # First tab content
-  tabItem(tabName = "dashboard",
-          
-          fluidRow(box(
-            width = 2,
-            selectInput(
-              "cont",
-              "Select country",
-              cont,
-              selected = 'Turkey',
-              multiple = FALSE
-            )
-          ),
-          valueBoxOutput("totalCase", width = 2),
-          valueBoxOutput("totalDeath", width = 2),
-          valueBoxOutput("newCase", width = 2),
-          valueBoxOutput("newDeath", width = 2),),
-          
-          fluidRow(
-            box(
-              title = "New Cases",
-              width = 10,
-              solidHeader = TRUE,
-              collapsible = TRUE,
-              plotlyOutput("plot1", height = 500)
-            )),
-          
-          fluidRow(
-            box(
-              title = "Daily Cases",
-              width = 10,
-              solidHeader = TRUE,
-              collapsible = TRUE,
-              leafletOutput("map")  
-            ),
-            
-            
-          )),
-  
-  # Second tab content
-  tabItem(tabName = "widgets",
-          h2("Widgets tab content"))
-))
-
-
-
-
-
-ui <- dashboardPage(header,
-                    sidebar,
-                    body)
-
 
 
 server <- function(input, output) {
@@ -233,4 +159,4 @@ server <- function(input, output) {
   
 }
 
-shinyApp(ui, server)
+# shinyApp(ui, server)

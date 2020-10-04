@@ -1,0 +1,4 @@
+libssl-dev
+libgdal-dev
+libproj-dev
+python3-pip

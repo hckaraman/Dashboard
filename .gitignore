@@ -54,3 +54,9 @@ Test/venv/Lib/site-packages/__pycache__/
 Test/venv/Lib/site-packages/
 
 Test/venv/
+
+Data/.~lock.cont.csv#
+
+Data/.~lock.names.csv#
+
+Data/test.csv
